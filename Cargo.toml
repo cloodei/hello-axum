@@ -1,0 +1,17 @@
+[package]
+name = "hello-axum"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+tokio = { version = "1.44.2", features = ["full"] }
+axum = "0.8.4"
+redis = { version = "0.30.0", features = ["tokio-comp", "connection-manager"] }
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+tracing = "0.1.41"
+tracing-subscriber = { version = "0.3.19", features = ["env-filter"] }
+dotenv = "0.15.0"
+anyhow = "1.0.98"
+bb8 = "0.9.0"
+bb8-redis = "0.22.0"
