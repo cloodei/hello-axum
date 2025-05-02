@@ -28,3 +28,8 @@ This crate uses `#![forbid(unsafe_code)]` to ensure everything is implemented in
 ## Minimum supported Rust version
 
 axum's MSRV is 1.75.
+
+[docs]: https://docs.rs/axum
+[readme-example]: https://github.com/tokio-rs/axum/tree/main/examples/readme
+[examples]: https://github.com/tokio-rs/axum/tree/main/examples
+[`hyper`]: https://crates.io/crates/hyper
