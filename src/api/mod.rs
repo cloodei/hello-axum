@@ -1,7 +1,7 @@
 use axum::{extract::{Path, State}, response::IntoResponse, http::StatusCode, Json};
 use redis::AsyncCommands;
 use serde_json::{from_str, to_string};
-use crate::{error::Error, prelude::redis::*};
+use crate::{error::redis::Error, prelude::redis::*};
 
 const NEXT_ID_KEY: &str = "next_item_id";
 const ITEM_INDEX_KEY: &str = "items_index";

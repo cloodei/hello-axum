@@ -1,10 +1,7 @@
-#![allow(non_snake_case, unused, unused_imports, dead_code)]
-
 use bb8_redis::{bb8, RedisConnectionManager};
-use axum::{extract::State, Router, routing::{get, post, put, delete}, response::IntoResponse};
+use axum::{Router, routing::{get, post}};
 use crate::prelude::redis::*;
 use crate::api::*;
-use crate::error::*;
 
 pub async fn main() -> anyhow::Result<()> {
     dotenv::dotenv().ok();

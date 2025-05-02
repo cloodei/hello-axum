@@ -4,7 +4,7 @@ use reqwest::{Client, Method, StatusCode};
 use std::io::{self, Write};
 use std::time::{Duration, Instant};
 use tokio::io::{AsyncBufReadExt, BufReader};
-use crate::prelude::redis::{CreateItemPayload, Item};
+use hello_axum::prelude::redis::{CreateItemPayload, Item};
 
 const BASE_URL: &str = "http://127.0.0.1:3000/api";
 
@@ -348,6 +348,7 @@ async fn prompt_for_method() -> Result<Option<Method>> {
     }
 }
 
+#[tokio::main]
 pub async fn main() -> Result<()> {
     let client = Client::new();
     println!("{}", "Client Started".bold().cyan());

@@ -1,9 +1,6 @@
 #![allow(non_snake_case, unused, unused_imports, dead_code)]
 
-pub mod error;
-pub mod prelude;
-pub mod api;
-pub mod app;
+use hello_axum::app;
 
 #[tokio::main]
 async fn main() {

@@ -1,7 +1,7 @@
 pub mod redis {
-    use axum::{http::StatusCode, response::{IntoResponse, Response}, Json};
+    use axum::{http::StatusCode, response::{IntoResponse, Response}};
     use serde::{Deserialize, Serialize};
-    use crate::error::*;
+    use crate::error::redis::Error;
 
     #[derive(Serialize, Deserialize, Debug, Clone, PartialEq)]
     pub struct Item {
@@ -70,4 +70,27 @@ pub mod redis {
     }
     
     pub type Result<T> = std::result::Result<T, Error>;    
+}
+
+pub mod postgres {
+    use serde::{Deserialize, Serialize};
+
+    #[derive(Serialize, Deserialize, Debug, Clone)]
+    pub struct Datas {
+        pub id: i32,
+        pub name: String,
+        pub flags: i64,
+        pub sys: i16
+    }
+
+    #[derive(Serialize, Deserialize, Debug, Clone)]
+    pub struct Niceties {
+        pub id: i32,
+        pub datas_id: i32,
+        pub mem: i64,
+        pub stack: i16,
+        pub info: String
+    }
+
+
 }
