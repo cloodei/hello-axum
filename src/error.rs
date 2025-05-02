@@ -1,6 +1,3 @@
-#![allow(non_snake_case, unused, unused_imports, dead_code)]
-
-use axum::{http::StatusCode, response::{IntoResponse, Response}, Json};
 use std::fmt;
 
 #[derive(Debug)]
@@ -21,7 +18,3 @@ impl fmt::Display for Error {
     }
 }
 impl std::error::Error for Error {}
-
-pub fn map_pool_error<E: std::error::Error + 'static>(e: bb8::RunError<E>) -> Error {
-    Error::PoolError(e.to_string())
-}
