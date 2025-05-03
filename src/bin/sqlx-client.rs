@@ -1,6 +1,6 @@
 use anyhow::{anyhow, Result};
 use colored::*;
-use hello_axum::prelude::postgres::{Datas, DatasPayload};
+use hello_axum::prelude::sqlx::{Datas, DatasPayload};
 use reqwest::{Client, Method, StatusCode};
 use std::io::{self, Write};
 use std::time::{Duration, Instant};

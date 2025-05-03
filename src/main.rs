@@ -11,25 +11,18 @@ async fn main() {
     
     match mode.as_str() {
         "redis" => {
-            if let Err(err) = app::server::redis().await {
+            if let Err(err) = app::redis().await {
                 eprintln!("You failed my nga: {}", err);
             }
 
             println!("Server closed.");
         }
-        "postgres" => {
-            if let Err(err) = app::server::postgres().await {
+        "sqlx" => {
+            if let Err(err) = app::sqlx().await {
                 eprintln!("You failed my nga: {}", err);
             }
 
             println!("Server closed.");
-        }
-        "client" => {
-            if let Err(err) = app::client::main().await {
-                eprintln!("You failed my nga: {}", err);
-            }
-
-            println!("Client closed.");
         }
         _ => {
             eprintln!("Invalid mode: {}. Use 'client' or 'redis'/'postgres'.", mode);

@@ -1,6 +1,6 @@
-use crate::{error::postgres::Error, prelude::postgres::{AppState, Datas, DatasPayload, Result}};
 use axum::{extract::{Path, State}, http::StatusCode, Json};
 use sqlx::{query_as, query};
+use crate::{error::sqlx::Error, prelude::sqlx::{AppState, Datas, DatasPayload, Result}};
 
 pub async fn get_datas(State(app): State<AppState>) -> Result<Json<Vec<Datas>>> {
     let x = query_as!(Datas, "SELECT * FROM items.datas").fetch_all(&app.pg_pool).await?;
