@@ -1,7 +1,7 @@
 use axum::{extract::{Path, State}, response::IntoResponse, http::StatusCode, Json};
 use redis::AsyncCommands;
 use serde_json::{from_str, to_string};
-use crate::{error::redis::Error, prelude::redis::*};
+use crate::{error::redis::*, prelude::redis::*};
 
 const NEXT_ID_KEY: &str = "next_item_id";
 const ITEM_INDEX_KEY: &str = "items_index";
@@ -92,13 +92,13 @@ pub async fn update_item(
     let mut con = state.redis_pool.get().await.map_err(map_pool_error)?;
     let key = item_key(id);
 
-    // 1. Check if item exists before updating (optional, depends on desired PUT semantics)
+    // Check if item exists before updating (optional, depends on desired PUT semantics)
     let exists: bool = con.exists(&key).await?;
     if !exists {
         return Err(Error::NotFound(format!("Item ID: {}", id)));
     }
 
-    // 2. Create the updated item struct (ensure ID remains the same)
+    // Create the updated item struct (ensure ID remains the same)
     let updated_item = Item {
         id,
         name: payload.name,
@@ -108,7 +108,7 @@ pub async fn update_item(
         weight: payload.weight,
     };
 
-    // 3. Serialize and overwrite the item in Redis
+    // Serialize and overwrite the item in Redis
     let item_json = to_string(&updated_item)?;
     let x = &key[..];
     con.set::<_, _, ()>(x, item_json).await?;

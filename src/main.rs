@@ -8,32 +8,32 @@ async fn main() {
     let args: Vec<String> = std::env::args().collect();
 
     let mode = &args[1];
-    if mode == "redis" {
-        println!("Starting server...");
-        
-        if let Err(e) = app::server::redis().await {
-            eprintln!("Error: {}", e);
+    
+    match mode.as_str() {
+        "redis" => {
+            if let Err(err) = app::server::redis().await {
+                eprintln!("You failed my nga: {}", err);
+            }
+
+            println!("Server closed.");
         }
-        println!("Server stopped.");
-    }
-    else if mode == "postgres" {
-        println!("Starting client...");
-        
-        if let Err(e) = app::server::postgres().await {
-            eprintln!("Error: {}", e);
+        "postgres" => {
+            if let Err(err) = app::server::postgres().await {
+                eprintln!("You failed my nga: {}", err);
+            }
+
+            println!("Server closed.");
         }
-        println!("Server stopped.");
-    }
-    else if mode == "client" {
-        println!("Starting client...");
-        
-        if let Err(e) = app::client::main().await {
-            eprintln!("Error: {}", e);
+        "client" => {
+            if let Err(err) = app::client::main().await {
+                eprintln!("You failed my nga: {}", err);
+            }
+
+            println!("Client closed.");
         }
-        println!("Client stopped.");
-    }
-    else {
-        eprintln!("Invalid mode: {}. Use 'client' or 'server'.", mode);
-        std::process::exit(1);
+        _ => {
+            eprintln!("Invalid mode: {}. Use 'client' or 'redis'/'postgres'.", mode);
+            std::process::exit(0xA0);
+        }
     }
 }

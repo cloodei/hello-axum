@@ -25,7 +25,7 @@ overflow-checks = false
 lto = true
 debug = false
 panic = "abort"
-codegen-units = 16  # revert back to 1 on future builds
+codegen-units = 1
 incremental = false
 strip = "symbols"
 
