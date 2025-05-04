@@ -94,10 +94,11 @@ async fn handle_get(client: &Client) -> Result<()> {
 
     println!("{} {} {}...", "Sending".dimmed(), "GET".blue(), url);
     let start_time = Instant::now();
-    
-    match client.get(&url).send().await {
+    let res = client.get(url).send().await;
+    let elapsed = start_time.elapsed();
+
+    match res {
         Ok(res) => {
-            let elapsed = start_time.elapsed();
             let status = res.status();
             println!("{} {} (took {})", "Received status:".dimmed(), status, format_duration(elapsed)); 
 
@@ -151,11 +152,14 @@ async fn handle_post(client: &Client) -> Result<()> {
 
     let url = format!("{}/datas", BASE_URL);
     println!("{} {} {}...", "Sending".dimmed(), "POST".green(), url);
-
+    let rq = client.post(&url).json(&payload);
+    
     let start_time = Instant::now();
-    match client.post(&url).json(&payload).send().await {
+    let res = rq.send().await;
+    let elapsed = start_time.elapsed();
+
+    match res {
         Ok(res) => {
-            let elapsed = start_time.elapsed();
             let status = res.status();
             println!("{} {} (took {})", "Received status:".dimmed(), status, format_duration(elapsed)); 
 
@@ -258,11 +262,14 @@ async fn handle_put(client: &Client) -> Result<()> {
     }
 
     println!("{} {} {}...", "Sending".dimmed(), "PUT".yellow(), url);
+    let rq = client.put(&url).json(&payload);
+
     let start_time = Instant::now();
+    let res = rq.send().await;
+    let elapsed = start_time.elapsed();
     
-    match client.put(&url).json(&payload).send().await {
+    match res {
         Ok(res) => {
-            let elapsed = start_time.elapsed();
             let status = res.status();
             println!("{} {} (took {})", "Received status:".dimmed(), status, format_duration(elapsed)); 
 

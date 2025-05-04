@@ -79,6 +79,7 @@ pub mod sqlx {
 
 pub mod tok_postgres {
     use serde::{Deserialize, Serialize};
+    use tokio_postgres::Statement;
     use crate::error::tok_postgres::Error;
 
     #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -111,6 +112,16 @@ pub mod tok_postgres {
         pub mem: i64,
         pub stack: i16,
         pub info: String
+    }
+
+    #[derive(Clone)]
+    pub struct AppState {
+        pub pg_pool: PgPool,
+        pub get_datas: Statement,
+        pub get_data: Statement,
+        pub create_datas: Statement,
+        pub edit_datas: Statement,
+        pub destroy_datas: Statement,
     }
 
     pub type Result<T> = std::result::Result<T, Error>;

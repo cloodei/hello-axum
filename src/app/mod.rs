@@ -3,6 +3,8 @@ use bb8_postgres::PostgresConnectionManager;
 use tokio::net::TcpListener;
 use axum::{Router, routing::get};
 
+use crate::prelude::tok_postgres::AppState;
+
 pub async fn redis() -> Result<()> {
     use bb8_redis::{bb8, RedisConnectionManager};
     use crate::prelude::redis::*;
@@ -92,11 +94,29 @@ pub async fn tok_postgres() -> Result<()> {
     let manager = PostgresConnectionManager::new(database_url.parse()?, NoTls);
     let pool = bb8::Pool::builder().build(manager).await?;
 
+    let conn = pool.get().await?;
+    let gds = conn.prepare("SELECT * FROM items.datas").await?;
+    let gd  = conn.prepare("SELECT * FROM items.datas WHERE id = $1").await?;
+    let cds = conn.prepare("INSERT INTO items.datas (name, flags, sys) VALUES ($1, $2, $3) RETURNING id").await?;
+    let eds = conn.prepare("UPDATE items.datas SET name = $1, flags = $2, sys = $3 WHERE id = $4").await?;
+    let dds = conn.prepare("DELETE FROM items.datas WHERE id = $1").await?;
+
+    drop(conn);
+
+    let state = AppState {
+        pg_pool: pool,
+        get_datas: gds,
+        get_data: gd,
+        create_datas: cds,
+        edit_datas: eds,
+        destroy_datas: dds
+    };
+
     let listener = TcpListener::bind("0.0.0.0:3000").await?;
     let app = Router::new()
         .route("/api/datas", get(get_datas).post(create_datas))
         .route("/api/datas/{id}", get(get_data).put(edit_datas).delete(destroy_datas))
-        .with_state(pool);
+        .with_state(state);
 
     tracing::info!("🚀 Server listening on http://localhost:3000/api/datas");
 
