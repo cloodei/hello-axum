@@ -40,7 +40,7 @@ pub async fn edit_datas(
     Json(payload): Json<DatasPayload>,
 ) -> Result<Json<i32>> {
     let x = query!(
-        "UPDATE items.datas SET name = $1, flags = $2, sys = $3 WHERE ID = $4 RETURNING id",
+        "UPDATE items.datas SET name = $1, flags = $2, sys = $3 WHERE id = $4 RETURNING id",
         payload.name,
         payload.flags,
         payload.sys,

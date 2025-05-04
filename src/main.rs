@@ -24,6 +24,13 @@ async fn main() {
 
             println!("Server closed.");
         }
+        "postgres" => {
+            if let Err(err) = app::tok_postgres().await {
+                eprintln!("You failed my nga: {}", err);
+            }
+
+            println!("Server closed.");
+        }
         _ => {
             eprintln!("Invalid mode: {}. Use 'client' or 'redis'/'postgres'.", mode);
             std::process::exit(0xA0);

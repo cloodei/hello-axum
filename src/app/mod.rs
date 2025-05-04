@@ -94,8 +94,8 @@ pub async fn tok_postgres() -> Result<()> {
 
     let listener = TcpListener::bind("0.0.0.0:3000").await?;
     let app = Router::new()
-        // .route("/api/datas", get(get_datas).post(create_datas))
-        // .route("/api/datas/{id}", get(get_data).put(edit_datas).delete(destroy_datas))
+        .route("/api/datas", get(get_datas).post(create_datas))
+        .route("/api/datas/{id}", get(get_data).put(edit_datas).delete(destroy_datas))
         .with_state(pool);
 
     tracing::info!("🚀 Server listening on http://localhost:3000/api/datas");
