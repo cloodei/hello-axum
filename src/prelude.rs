@@ -78,8 +78,10 @@ pub mod sqlx {
 
 
 pub mod tok_postgres {
+    use std::{convert::Infallible, sync::Arc};
     use serde::{Deserialize, Serialize};
-    use tokio_postgres::Statement;
+    use tokio_postgres::{Client, Statement};
+    use axum::{extract::FromRequestParts, http::request::Parts};
     use crate::error::tok_postgres::Error;
 
     #[derive(Serialize, Deserialize, Debug, Clone)]
@@ -122,6 +124,25 @@ pub mod tok_postgres {
         pub create_datas: Statement,
         pub edit_datas: Statement,
         pub destroy_datas: Statement,
+    }
+
+    pub struct PgClient {
+        pub client: Client,
+        pub get_datas: Statement,
+        pub get_data: Statement,
+        pub create_datas: Statement,
+        pub edit_datas: Statement,
+        pub destroy_datas: Statement,
+    }
+
+    pub struct PgConnection(pub Arc<PgClient>);
+
+    impl FromRequestParts<Arc<PgClient>> for PgConnection {
+        type Rejection = Infallible;
+
+        async fn from_request_parts(_: &mut Parts, pg_connection: &Arc<PgClient>) -> std::result::Result<Self, Self::Rejection> {
+            Ok(Self(pg_connection.clone()))
+        }
     }
 
     pub type Result<T> = std::result::Result<T, Error>;

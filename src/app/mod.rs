@@ -1,9 +1,6 @@
 use anyhow::Result;
-use bb8_postgres::PostgresConnectionManager;
 use tokio::net::TcpListener;
 use axum::{Router, routing::get};
-
-use crate::prelude::tok_postgres::AppState;
 
 pub async fn redis() -> Result<()> {
     use bb8_redis::{bb8, RedisConnectionManager};
@@ -79,7 +76,9 @@ pub async fn sqlx() -> Result<()> {
 
 pub async fn tok_postgres() -> Result<()> {
     use tokio_postgres::NoTls;
+    use bb8_postgres::PostgresConnectionManager;
     use crate::api::tok_postgres::*;
+    use crate::prelude::tok_postgres::AppState;
 
     tracing_subscriber::fmt()
         .without_time()
@@ -119,6 +118,56 @@ pub async fn tok_postgres() -> Result<()> {
         .with_state(state);
 
     tracing::info!("🚀 Server listening on http://localhost:3000/api/datas");
+
+    axum::serve(listener, app).await?;
+
+    Ok(())
+}
+
+
+pub async fn single_tok_postgres() -> Result<()> {
+    use tokio_postgres::NoTls;
+    use crate::api::single_tp::*;
+    use crate::prelude::tok_postgres::*;
+
+    tracing_subscriber::fmt()
+        .without_time()
+        .with_thread_names(false)
+        .with_line_number(true)
+        .pretty()
+        .with_target(false)
+        .with_level(true)
+        .init();
+
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let (client, connection) = tokio_postgres::connect(&database_url, NoTls).await?;
+
+    tokio::spawn(async move {
+        if let Err(e) = connection.await {
+            eprintln!("Connection error: {}", e);
+        }
+    });
+    
+    let gds = client.prepare("SELECT * FROM items.datas").await?;
+    let gd  = client.prepare("SELECT * FROM items.datas WHERE id = $1").await?;
+    let cds = client.prepare("INSERT INTO items.datas (name, flags, sys) VALUES ($1, $2, $3) RETURNING id").await?;
+    let eds = client.prepare("UPDATE items.datas SET name = $1, flags = $2, sys = $3 WHERE id = $4").await?;
+    let dds = client.prepare("DELETE FROM items.datas WHERE id = $1").await?;
+
+    let state = std::sync::Arc::new(PgClient {
+        client,
+        get_datas: gds,
+        get_data: gd,
+        create_datas: cds,
+        edit_datas: eds,
+        destroy_datas: dds
+    });
+
+    let listener = TcpListener::bind("0.0.0.0:3000").await?;
+    let app = Router::new()
+        .route("/api/datas", get(get_datas).post(create_datas))
+        .route("/api/datas/{id}", get(get_data).put(edit_datas).delete(destroy_datas))
+        .with_state(state);
 
     axum::serve(listener, app).await?;
 
